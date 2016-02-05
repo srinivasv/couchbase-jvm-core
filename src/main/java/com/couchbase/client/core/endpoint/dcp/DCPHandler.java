@@ -150,8 +150,10 @@ public class DCPHandler extends AbstractGenericHandler<FullBinaryMemcacheRespons
                     break;
                 case ERR_ROLLBACK:
                     rollbackToSequenceNumber = content.readLong();
+                    connection.removeStream(msg.getOpaque());
                     break;
                 default:
+                    connection.removeStream(msg.getOpaque());
                     LOGGER.warn("Unexpected status of StreamRequestResponse: {} (0x{}, {})",
                             status, Integer.toHexString(status.code()), status.description());
             }
@@ -269,7 +271,7 @@ public class DCPHandler extends AbstractGenericHandler<FullBinaryMemcacheRespons
                 extras.writeBytes(extrasReleased, extrasReleased.readerIndex(), extrasReleased.readableBytes());
                 flags = extras.readInt();
                 extras.release();
-                request = new StreamEndMessage(StreamEndMessage.Reason.valueOf(flags), connection.bucket());
+                request = new StreamEndMessage(msg.getStatus(), StreamEndMessage.Reason.valueOf(flags), connection.bucket());
                 connection.removeStream(msg.getOpaque());
                 updateConnectionStats(ctx, connection, msg);
                 break;

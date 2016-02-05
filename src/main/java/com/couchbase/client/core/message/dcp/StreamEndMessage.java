@@ -28,8 +28,9 @@ package com.couchbase.client.core.message.dcp;
 public class StreamEndMessage extends AbstractDCPRequest {
     private final Reason reason;
 
-    public StreamEndMessage(final Reason reason, final String bucket) {
+    public StreamEndMessage(final short partition, final Reason reason, final String bucket) {
         super(bucket, null);
+        this.partition(partition);
         this.reason = reason;
     }
 
